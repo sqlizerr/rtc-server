@@ -28,4 +28,25 @@ module.exports.register = async (req, res, next) => {
     catch(err){
         next(err);
     }
-}   
+} 
+
+module.exports.login = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({username});
+        if(!user){
+            return res.json({msg: "Incorrect username or password!", status: false});
+        }
+
+        const isPassValid = await bcrypt.compare(password, user.password);
+        if(!isPassValid){
+            return res.json({msg: "Incorrect username or password!", status: false});
+        }
+
+        delete user.password;
+        return res.json({msg: "User logged in successfully!", status: true, user});
+    }
+    catch(err){
+        next(err);
+    }
+} 
