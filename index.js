@@ -13,6 +13,12 @@ app.use(express.json());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/messages", messageRoute);
+app.use(cors(
+    {
+        origin: "*",
+        credentials: true
+    }
+));
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('DB Connected!');
@@ -26,7 +32,7 @@ const server = app.listen(process.env.PORT, () => {
 
 const io = socket(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "*",
         credentials: true
     }
 })
