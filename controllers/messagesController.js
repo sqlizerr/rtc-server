@@ -1,4 +1,5 @@
 const messageModel = require('../models/messageModel');
+const User = require('../models/userModel');
 
 module.exports.addMessage = async (req, res, next) => {
     try {
@@ -33,6 +34,24 @@ module.exports.getAllMessages = async (req, res, next) => {
             }
         });
         res.json(projectMessages);
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports.getSavedChats = async (req, res, next) => {
+    try {
+        const { from } = req.body;
+        const uniqueUsernames = await messageModel.distinct('users', { $or: [{sender: from}, {'users.1': from}]});
+        const response = uniqueUsernames.filter(user => user !== from);
+        const usersarr = await Promise.all(response.map(user => User.find({_id:{$eq: user}}).select([
+            "email",
+            "username",
+            "avatarImage"
+        ])));
+        const users = usersarr.flat();
+
+        res.json(users);
     } catch (err) {
         next(err);
     }

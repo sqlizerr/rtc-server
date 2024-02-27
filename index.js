@@ -13,12 +13,7 @@ app.use(express.json());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/messages", messageRoute);
-app.use(cors(
-    {
-        origin: "*",
-        credentials: true
-    }
-));
+
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('DB Connected!');
